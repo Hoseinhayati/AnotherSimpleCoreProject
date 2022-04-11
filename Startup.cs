@@ -33,7 +33,19 @@ namespace Asp.netCore_MVC_
                 options.UseSqlServer(connectionString:
                     Configuration.GetConnectionString("DefaultConnection"));
             });
-            
+            services.AddMvc();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("EnableCors", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .Build();
+                });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,24 +61,21 @@ namespace Asp.netCore_MVC_
                 //app.UseExceptionHandler("/Home/Error");
                 //app.UseHsts();
             }
-            //app.UseHttpsRedirection();
-            //app.UseStaticFiles();
 
-            //app.UseRouting();
-
-            //app.UseAuthorization();
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllerRoute(
-            //        name: "default",
-            //        pattern: "{controller=Home}/{action=Index}/{id?}");
-            //});
-
-            app.Run(async (context) =>
+            if (env.IsDevelopment())
             {
-                await context.Response.WriteAsync("Hello World!");
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseCors("EnableCors");
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
             });
+
         }
     }
 }

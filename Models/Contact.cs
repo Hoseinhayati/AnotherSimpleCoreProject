@@ -15,6 +15,7 @@ namespace Asp.netCore_MVC_.Models
         public string Address { get; set; }
         [EmailAddress]
         public string Email { get; set; }
-        public int Phone { get; set; }
+        [Phone]
+        public string Phone { get; set; }
     }
 }
