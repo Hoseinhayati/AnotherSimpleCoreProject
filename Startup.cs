@@ -8,9 +8,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Asp.netCore_MVC_.AutoMapperConfig;
 using Asp.netCore_MVC_.Data;
 using Asp.netCore_MVC_.Middleware;
+using Asp.netCore_MVC_.Repo;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Asp.netCore_MVC_
@@ -33,8 +36,15 @@ namespace Asp.netCore_MVC_
                 options.UseSqlServer(connectionString:
                     Configuration.GetConnectionString("DefaultConnection"));
             });
-            services.AddMvc();
+            services.AddAutoMapper(typeof(CommonProfile).Assembly);
 
+            services.AddScoped<IBookBiz, BookBiz>();
+
+            services.AddMvc(options =>
+            {
+                options.EnableEndpointRouting = false;
+            });
+                
             services.AddCors(options =>
             {
                 options.AddPolicy("EnableCors", builder =>
@@ -71,11 +81,17 @@ namespace Asp.netCore_MVC_
             app.UseCors("EnableCors");
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //});
 
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }
