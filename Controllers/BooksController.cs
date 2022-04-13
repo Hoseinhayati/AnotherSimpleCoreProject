@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Asp.netCore_MVC_.Biz;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Asp.netCore_MVC_.Data;
 using Asp.netCore_MVC_.Models;
-using Asp.netCore_MVC_.Repo;
 using Asp.netCore_MVC_.ViewModel;
 using AutoMapper;
 
