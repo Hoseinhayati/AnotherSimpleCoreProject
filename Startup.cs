@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Asp.netCore_MVC_.AutoMapperConfig;
+using Asp.netCore_MVC_.Biz;
 using Asp.netCore_MVC_.Data;
 using Asp.netCore_MVC_.Middleware;
-using Asp.netCore_MVC_.Repo;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -63,14 +63,26 @@ namespace Asp.netCore_MVC_
         {
             if (env.IsDevelopment())
             {
-                //app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();
                 app.UseMyMiddleware();
             }
             else
             {
-                //app.UseExceptionHandler("/Home/Error");
-                //app.UseHsts();
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
             }
+
+            app.UseStatusCodePages(async context =>
+            {
+                context.HttpContext.Response.ContentType = "text/plain";
+
+                await context.HttpContext.Response.WriteAsync(
+                    "Status code page, status code: " +
+                    context.HttpContext.Response.StatusCode);
+            });
+
+            //app.UseStatusCodePagesWithRedirects("/MyStatusCode?code={0}");
+
 
             if (env.IsDevelopment())
             {
