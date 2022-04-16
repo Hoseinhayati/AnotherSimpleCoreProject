@@ -27,7 +27,6 @@ namespace Asp.netCore_MVC_
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -38,12 +37,13 @@ namespace Asp.netCore_MVC_
             });
             services.AddAutoMapper(typeof(CommonProfile).Assembly);
 
-            services.AddScoped<IBookBiz, BookBiz>();
+            services.AddScoped<IContactBiz, ContactBiz>();
 
-            services.AddMvc(options =>
-            {
-                options.EnableEndpointRouting = false;
-            });
+            //services.AddMvc(options =>
+            //{
+            //    options.EnableEndpointRouting = false;
+            //});
+            services.AddMvc();
                 
             services.AddCors(options =>
             {
@@ -58,7 +58,6 @@ namespace Asp.netCore_MVC_
 
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -93,17 +92,17 @@ namespace Asp.netCore_MVC_
             app.UseCors("EnableCors");
             app.UseRouting();
 
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllers();
-            //});
-
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllers();
             });
+
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute(
+            //        name: "default",
+            //        template: "{controller=Home}/{action=Index}/{id?}");
+            //});
         }
     }
 }

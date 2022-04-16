@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Asp.netCore_MVC_.Biz;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,97 +15,71 @@ namespace Asp.netCore_MVC_.Controllers
     [ApiController]
     public class ContactsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IContactBiz _contactBiz;
 
-        public ContactsController(ApplicationDbContext context)
+        public ContactsController(IContactBiz contactBiz)
         {
-            _context = context;
+            _contactBiz = contactBiz;
         }
 
-        // GET: api/Contacts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Contact>>> GetContacts()
         {
-            return await _context.Contacts.ToListAsync();
+            return Ok(await _contactBiz.GetAllAsync());
         }
 
-        // GET: api/Contacts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Contact>> GetContact(int id)
         {
-            var contact = await _context.Contacts.FindAsync(id);
-
+            var contact = await _contactBiz.GetAsync(id);
             if (contact == null)
             {
-                return NotFound();
+                return Ok("آیتم یافت نشد");
             }
 
             return contact;
         }
 
-        // PUT: api/Contacts/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutContact(int id, Contact contact)
+        public async Task<IActionResult> PutContact(Contact contact)
         {
-            if (id != contact.Id)
+            var result = await _contactBiz.UpdateAsync(contact);
+            if (!result.Success)
             {
-                return BadRequest();
+               return Ok(result.Errors.Select(a => a.Message).ToList());
             }
-
-            _context.Entry(contact).State = EntityState.Modified;
-
-            try
+            else
             {
-                await _context.SaveChangesAsync();
+                return Ok("رکورد ویرایش شد");
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ContactExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
         }
 
-        // POST: api/Contacts
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
         public async Task<ActionResult<Contact>> PostContact(Contact contact)
         {
-            _context.Contacts.Add(contact);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetContact", new { id = contact.Id }, contact);
-        }
-
-        // DELETE: api/Contacts/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Contact>> DeleteContact(int id)
-        {
-            var contact = await _context.Contacts.FindAsync(id);
-            if (contact == null)
+            var result = await _contactBiz.AddAsync(contact);
+            if (!result.Success)
             {
-                return NotFound();
+                return Ok(result.Errors.Select(a => a.Message).ToList());
             }
-
-            _context.Contacts.Remove(contact);
-            await _context.SaveChangesAsync();
-
-            return contact;
+            else
+            {
+                return Ok("رکورد با موفقیت اضافه شد");
+            }
         }
 
-        private bool ContactExists(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteContact(int id)
         {
-            return _context.Contacts.Any(e => e.Id == id);
+            var result = await _contactBiz.DeleteAsync(id);
+            if (!result.Success)
+            {
+                return Ok(result.Errors.Select(a => a.Message).ToList());
+            }
+            else
+            {
+                return Ok("رکورد حذف شد");
+            }
         }
     }
 }
