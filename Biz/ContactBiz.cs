@@ -14,12 +14,10 @@ namespace Asp.netCore_MVC_.Biz
     public class ContactBiz:IContactBiz
     {
         private readonly ApplicationDbContext _context;
-        private readonly IUnitOfWork _uow;
 
-        public ContactBiz(ApplicationDbContext context, IUnitOfWork uow)
+        public ContactBiz(ApplicationDbContext contex)
         {
-            _uow = uow;
-            _context = context;
+            _context = contex;
         }
 
         private bool IsExist(string name)
@@ -42,7 +40,7 @@ namespace Asp.netCore_MVC_.Biz
             }
 
             _context.Contacts.Add(contact);
-            int rowEffect = await _uow.SaveChangesAsync();
+            int rowEffect = await _context.SaveChangesAsync();
             if (rowEffect == 0)
             {
                 result.AddError("خطا", "رکورد نا معتبر می باشد");
@@ -65,7 +63,7 @@ namespace Asp.netCore_MVC_.Biz
 
             _context.Contacts.Update(contact);
 
-            int rowEffect = await _uow.SaveChangesAsync();
+            int rowEffect = await _context.SaveChangesAsync();
             if (rowEffect == 0)
             {
                 result.AddError("خطا", "رکورد نا معتبر می باشد");
@@ -87,7 +85,7 @@ namespace Asp.netCore_MVC_.Biz
             }
 
             _context.Contacts.Remove(contact);
-            int rowEffect = await _uow.SaveChangesAsync();
+            int rowEffect = await _context.SaveChangesAsync();
             if (rowEffect == 0)
             {
                 result.AddError("خطا", "رکورد نا معتبر می باشد");

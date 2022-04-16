@@ -8,7 +8,7 @@ namespace Asp.netCore_MVC_.AutoMapperConfig
     {
         public CommonProfile()
         {
-            CreateMap<Book, BookViewModel>().ReverseMap();
+            //CreateMap<Book, BookViewModel>().ReverseMap();
         }
     }
 }

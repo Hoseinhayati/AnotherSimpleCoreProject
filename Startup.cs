@@ -35,6 +35,7 @@ namespace Asp.netCore_MVC_
                 options.UseSqlServer(connectionString:
                     Configuration.GetConnectionString("DefaultConnection"));
             });
+
             services.AddAutoMapper(typeof(CommonProfile).Assembly);
 
             services.AddScoped<IContactBiz, ContactBiz>();
