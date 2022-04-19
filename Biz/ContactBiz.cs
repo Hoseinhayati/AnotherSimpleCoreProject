@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Asp.netCore_MVC_.Common.Messaging;
+using Asp.netCore_MVC_.Core.DataAccess;
 using Asp.netCore_MVC_.Data;
 using Asp.netCore_MVC_.Models;
 using Asp.netCore_MVC_.ViewModel;
@@ -14,10 +15,11 @@ namespace Asp.netCore_MVC_.Biz
     public class ContactBiz:IContactBiz
     {
         private readonly ApplicationDbContext _context;
-
-        public ContactBiz(ApplicationDbContext contex)
+        private readonly IUnitOfWork _unitOfWork;
+        public ContactBiz(ApplicationDbContext context,IUnitOfWork unitOfWork)
         {
-            _context = contex;
+            _context = context;
+            _unitOfWork= unitOfWork;
         }
 
         private bool IsExist(string name)
@@ -41,6 +43,7 @@ namespace Asp.netCore_MVC_.Biz
 
             _context.Contacts.Add(contact);
             int rowEffect = await _context.SaveChangesAsync();
+            _unitOfWork.Commit();
             if (rowEffect == 0)
             {
                 result.AddError("خطا", "رکورد نا معتبر می باشد");
@@ -64,6 +67,7 @@ namespace Asp.netCore_MVC_.Biz
             _context.Contacts.Update(contact);
 
             int rowEffect = await _context.SaveChangesAsync();
+            _unitOfWork.Commit();
             if (rowEffect == 0)
             {
                 result.AddError("خطا", "رکورد نا معتبر می باشد");
@@ -86,6 +90,7 @@ namespace Asp.netCore_MVC_.Biz
 
             _context.Contacts.Remove(contact);
             int rowEffect = await _context.SaveChangesAsync();
+            _unitOfWork.Commit();
             if (rowEffect == 0)
             {
                 result.AddError("خطا", "رکورد نا معتبر می باشد");
@@ -96,7 +101,7 @@ namespace Asp.netCore_MVC_.Biz
 
         public async Task<Contact> GetAsync(int id)
         {
-            return await _context.Contacts.FirstOrDefaultAsync(c => c.Id == id);
+            return await _unitOfWork.Repository<Contact>().Get().FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<List<Contact>> GetAllAsync()

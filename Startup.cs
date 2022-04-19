@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Asp.netCore_MVC_.AutoMapperConfig;
 using Asp.netCore_MVC_.Biz;
+using Asp.netCore_MVC_.Core.DataAccess;
 using Asp.netCore_MVC_.Data;
 using Asp.netCore_MVC_.Middleware;
 using Microsoft.AspNetCore.Http;
@@ -35,10 +36,10 @@ namespace Asp.netCore_MVC_
                 options.UseSqlServer(connectionString:
                     Configuration.GetConnectionString("DefaultConnection"));
             });
-
-            services.AddAutoMapper(typeof(CommonProfile).Assembly);
-
+            services.AddScoped<DbContext, ApplicationDbContext>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IContactBiz, ContactBiz>();
+            services.AddAutoMapper(typeof(CommonProfile).Assembly);
 
             //services.AddMvc(options =>
             //{
