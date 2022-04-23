@@ -13,6 +13,10 @@ using Asp.netCore_MVC_.Biz;
 using Asp.netCore_MVC_.Core.DataAccess;
 using Asp.netCore_MVC_.Data;
 using Asp.netCore_MVC_.Middleware;
+using Asp.netCore_MVC_.Migrations;
+using Asp.netCore_MVC_.Models;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +34,8 @@ namespace Asp.netCore_MVC_
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddFluentValidation();
+
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(connectionString:
@@ -39,6 +44,9 @@ namespace Asp.netCore_MVC_
             services.AddScoped<DbContext, ApplicationDbContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IContactBiz, ContactBiz>();
+
+            services.AddTransient<IValidator<Contact>, ContactValidator>();
+
             services.AddAutoMapper(typeof(CommonProfile).Assembly);
 
             //services.AddMvc(options =>
